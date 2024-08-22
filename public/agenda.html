@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Audiencias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        .table-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5 table-container">
+        <h1 class="mb-4">Agenda de Audiencias</h1>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Pedido</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Sala</th>
+                    <th>Juez</th>
+                    <th>Fiscal</th>
+                    <th>Defensor</th>
+                    <th>Audiencista</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="agendaTable">
+                <!-- Las filas se insertarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/agenda')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('agendaTable');
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.idAudiencia}</td>
+                            <td>${item.pedido}</td>
+                            <td>${item.fecha}</td>
+                            <td>${item.hora}</td>
+                            <td>${item.sala}</td>
+                            <td>${item.juez}</td>
+                            <td>${item.fiscal}</td>
+                            <td>${item.defensor}</td>
+                            <td>${item.aud}</td>
+                            <td>${item.estado_exp}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error al obtener la agenda:', error));
+        });
+    </script>
+
+</body>
+
+</html>
+

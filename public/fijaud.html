@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Expediente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1000px;
+        }
+        .form-box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-row {
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-box">
+        <h1 class="mb-4">Consulta de Expediente</h1>
+        <form id="consultaForm">
+            <div class="mb-3">
+                <label for="numExp" class="form-label">Número de Expediente</label>
+                <input type="text" class="form-control" id="numExp" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Consultar</button>
+        </form>
+
+        <div id="result" class="mt-4" style="display:none;">
+            <h2>Detalles del Expediente</h2>
+            <form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="caratula" class="form-label">Carátula</label>
+                            <textarea class="form-control" id="caratula" rows="3" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="organismo" class="form-label">Organismo</label>
+                            <input type="text" class="form-control" id="organismo" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="aud" class="form-label">Audiencista</label>
+                            <input type="text" class="form-control" id="aud" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="comu" class="form-label">Comunicador</label>
+                            <input type="text" class="form-control" id="comu" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="ap" class="form-label">Aten. Público</label>
+                            <input type="text" class="form-control" id="ap" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="tecnico" class="form-label">Técnico</label>
+                            <input type="text" class="form-control" id="tecnico" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="juez" class="form-label">Juez</label>
+                            <input type="text" class="form-control" id="juez" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fiscal" class="form-label">Fiscal</label>
+                            <input type="text" class="form-control" id="fiscal" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="def" class="form-label">Defensor</label>
+                            <input type="text" class="form-control" id="def" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="asesor" class="form-label">Asesor</label>
+                            <input type="text" class="form-control" id="asesor" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <input type="text" class="form-control" id="estado" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="obs" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="obs" rows="3" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="id" class="form-label">ID Expediente</label>
+                    <input type="text" class="form-control" id="id" readonly>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('consultaForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const numExp = document.getElementById('numExp').value;
+
+        fetch(`/consulta/${numExp}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    document.getElementById('caratula').value = data.caratula;
+                    document.getElementById('organismo').value = data.organismo;
+                    document.getElementById('aud').value = data.nomb_aud;
+                    document.getElementById('comu').value = data.nomb_com;
+                    document.getElementById('ap').value = data.mb_pub;
+                    document.getElementById('tecnico').value = data.nomb_tec;
+                    document.getElementById('juez').value = data.mb_jue;
+                    document.getElementById('fiscal').value = data.nomb_fis;
+                    document.getElementById('def').value = data.mb_def;
+                    document.getElementById('asesor').value = data.nomb_men;
+                    document.getElementById('estado').value = data.estado;
+                    document.getElementById('obs').value = data.obs;
+                    document.getElementById('id').value = data.idx;
+
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    alert('No se encontró el expediente');
+                }
+            });
+    });
+</script>
+
+</body>
+</html>
+
+
