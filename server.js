@@ -1,10 +1,22 @@
 const express = require('express');
 const mariadb = require('mariadb');
+const session = require('express-session');
+const path = require('path');
 const app = express();
 const port = 8080;
 
 // Configura Express para servir archivos estáticos desde la carpeta 'public'
 app.use(express.static('public'));
+
+// Configura Express para manejar datos de formularios
+app.use(express.urlencoded({ extended: true }));
+
+// Configuración de sesión
+app.use(session({
+  secret: 'tu_secreto_aqui', // Cambia esto por una cadena segura
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // Configuración de la conexión
 const pool = mariadb.createPool({
@@ -15,7 +27,45 @@ const pool = mariadb.createPool({
   connectionLimit: 5
 });
 
-// Ruta para obtener los datos del expediente
+// Ruta para mostrar el formulario de inicio de sesión
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Ruta para manejar la autenticación
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+    const rows = await conn.query(sql, [username, password]);
+    
+    if (rows.length > 0) {
+      req.session.loggedIn = true;
+      req.session.username = username;
+      res.redirect('/index.html');
+    } else {
+      res.redirect('/');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al autenticar');
+  } finally {
+    if (conn) conn.end();
+  }
+});
+
+// Ruta para servir la página principal después del login
+app.get('/index.html', (req, res) => {
+  if (req.session.loggedIn) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  } else {
+    res.redirect('/');
+  }
+});
+
+// Ruta para obtener los datos del expediente (ejemplo de funcionalidad existente)
 app.get('/consulta/:numExp', async (req, res) => {
   const numExp = parseInt(req.params.numExp, 10);
   let conn;
@@ -57,7 +107,7 @@ app.get('/consulta/:numExp', async (req, res) => {
   }
 });
 
-// Ruta para obtener los datos de la agenda
+// Ruta para obtener los datos de la agenda (ejemplo de funcionalidad existente)
 app.get('/agenda', async (req, res) => {
   let conn;
   try {
@@ -88,7 +138,6 @@ app.get('/agenda', async (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://192.168.1.3:${port}`);
-  });
-
+  console.log(`Servidor corriendo en http://localhost:${port}`);
+});
 
