@@ -67,30 +67,39 @@
         .login-container .form-footer a:hover {
             text-decoration: underline;
         }
+        .login-container .alert {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <img src="escudo-salta.png" alt="Escudo de Salta">
         <h2 class="text-center">Iniciar Sesión</h2>
-        <form>
+        <form action="/login" method="post">
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                 </div>
-                <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required>
             </div>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 </div>
-                <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
             <div class="form-footer">
                 <p>¿No tienes una cuenta? <a href="#">Regístrate</a></p>
                 <p><a href="#">¿Olvidaste tu contraseña?</a></p>
             </div>
+            <!-- Mostrar el mensaje de error si existe -->
+            <% if (error) { %>
+                <div class="alert alert-danger">
+                    <%= error %>
+                </div>
+            <% } %>
         </form>
     </div>
     <!-- Bootstrap JS and dependencies -->

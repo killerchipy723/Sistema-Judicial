@@ -6,7 +6,7 @@ const app = express();
 const port = 8080;
 
 // Configura Express para servir archivos estáticos desde la carpeta 'public'
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configura Express para manejar datos de formularios
 app.use(express.urlencoded({ extended: true }));
@@ -27,9 +27,13 @@ const pool = mariadb.createPool({
   connectionLimit: 5
 });
 
+// Configuración de EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // Ruta para mostrar el formulario de inicio de sesión
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  res.render('login', { error: req.query.error });
 });
 
 // Ruta para manejar la autenticación
@@ -38,15 +42,15 @@ app.post('/login', async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
+    const sql = "SELECT * FROM usuarios WHERE usuario = ? AND clave = ?";
     const rows = await conn.query(sql, [username, password]);
     
     if (rows.length > 0) {
       req.session.loggedIn = true;
       req.session.username = username;
-      res.redirect('/index.html');
+      res.redirect('/index.html'); // Añadir barra inicial
     } else {
-      res.redirect('/');
+      res.redirect('/?error=Contraseña incorrecta');
     }
   } catch (err) {
     console.error(err);
@@ -59,7 +63,7 @@ app.post('/login', async (req, res) => {
 // Ruta para servir la página principal después del login
 app.get('/index.html', (req, res) => {
   if (req.session.loggedIn) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname,'index.html')); // Corregir la ruta
   } else {
     res.redirect('/');
   }
@@ -140,4 +144,3 @@ app.get('/agenda', async (req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
