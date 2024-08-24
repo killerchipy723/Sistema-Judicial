@@ -7,50 +7,105 @@
     <title>Agenda de Audiencias</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <style>
-        .table-container {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        body {
+            background-color: #f4f7fa;
+            font-family: Arial, sans-serif;
         }
 
-        .table th {
+        .container {
+            margin-top: 50px;
+            max-width: 1200px;
+        }
+
+        .table-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
             background-color: #007bff;
             color: white;
+            font-weight: bold;
+            text-align: center;
         }
 
-        .table td, .table th {
+        .table tbody td {
             vertical-align: middle;
+            text-align: center;
+            padding: 12px;
+            color: #495057;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 5px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container mt-5 table-container">
-        <h1 class="mb-4">Agenda de Audiencias</h1>
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Pedido</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Sala</th>
-                    <th>Juez</th>
-                    <th>Fiscal</th>
-                    <th>Defensor</th>
-                    <th>Audiencista</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="agendaTable">
-                <!-- Las filas se insertarán aquí -->
-            </tbody>
-        </table>
+    <div class="container">
+        <div class="table-container">
+            <h1>Agenda de Audiencias</h1>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Pedido</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Sala</th>
+                        <th>Juez</th>
+                        <th>Fiscal</th>
+                        <th>Defensor</th>
+                        <th>Audiencista</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="agendaTable">
+                    <!-- Las filas se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        function formatDate(dateString) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-AR', options);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/agenda')
                 .then(response => response.json())
@@ -61,7 +116,7 @@
                         row.innerHTML = `
                             <td>${item.idAudiencia}</td>
                             <td>${item.pedido}</td>
-                            <td>${item.fecha}</td>
+                            <td>${formatDate(item.fecha)}</td>
                             <td>${item.hora}</td>
                             <td>${item.sala}</td>
                             <td>${item.juez}</td>

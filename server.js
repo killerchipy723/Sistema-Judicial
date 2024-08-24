@@ -1,3 +1,4 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 const mariadb = require('mariadb');
 const session = require('express-session');
@@ -81,14 +82,14 @@ app.get('/fijaud/:numExp', async (req, res) => {
     conn = await pool.getConnection();
     const sql = `
       SELECT e.idExpte as idx, e.caratula, e.organismo, 
-             CONCAT(a.apellido, ', ', a.nombre) AS nomb_aud, 
-             CONCAT(c.apellido, ', ', c.nombre) AS nomb_com, 
-             CONCAT(p.apellido, ', ', p.nombre) AS mb_pub,
-             CONCAT(t.apellido, ', ', t.nombre) AS nomb_tec, 
-             CONCAT(j.apellido, ', ', j.nombre) AS mb_jue, 
-             CONCAT(f.apellido, ', ', f.nombre) AS nomb_fis, 
-             CONCAT(d.apellido, ', ', d.nombre) AS mb_def, 
-             CONCAT(m.apellido, ', ', m.nombre) AS nomb_men, 
+             CONCAT(a.apellido, ', ', a.nombre) AS Audiencista, 
+             CONCAT(c.apellido, ', ', c.nombre) AS Comunicador, 
+             CONCAT(p.apellido, ', ', p.nombre) AS Atenc_Público,
+             CONCAT(t.apellido, ', ', t.nombre) AS Técnico, 
+             CONCAT(j.apellido, ', ', j.nombre) AS Juez, 
+             CONCAT(f.apellido, ', ', f.nombre) AS Fiscal, 
+             CONCAT(d.apellido, ', ', d.nombre) AS Defensor, 
+             CONCAT(m.apellido, ', ', m.nombre) AS Asesor, 
              e.estado, e.obs
       FROM exp e
       JOIN audiencista a ON e.IDaudiencista = a.IDaudiencista
@@ -144,7 +145,51 @@ app.get('/agenda', async (req, res) => {
   }
 });
 
+// Función para insertar una audiencia
+async function insertarAudiencia(numExp, pedido, fecha, hora, sala) {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    
+    // Paso 1: Obtener el idExpte correspondiente al num_exp
+    const sqlExpte = "SELECT idExpte FROM exp WHERE num_exp = ?";
+    const result = await connection.query(sqlExpte, [numExp]);
+    
+    if (result.length === 0) {
+      throw new Error('No se encontró el expediente');
+    }
+
+    const idExpte = result[0].idExpte;
+
+    // Paso 2: Insertar la audiencia
+    const sqlAud = `
+      INSERT INTO audiencias (pedido, fecha, hora, sala, idExpte, estado_exp)
+      VALUES (?, ?, ?, ?, ?, 'Pendiente')
+    `;
+    await connection.query(sqlAud, [pedido, fecha, hora, sala, idExpte]);
+
+  } catch (err) {
+    console.error('Error al insertar la audiencia:', err);
+    throw err;
+  } finally {
+    if (connection) connection.end();
+  }
+}
+
+// Ruta para manejar la inserción de audiencia
+app.post('/fijarAudiencia', async (req, res) => {
+  const { numExp, pedido, fechaAudiencia, hora, sala } = req.body;
+
+  try {
+    await insertarAudiencia(numExp, pedido, fechaAudiencia, hora, sala);
+    res.send('Audiencia fijada correctamente.');
+  } catch (err) {
+    res.status(500).send('Error al fijar la audiencia.');
+  }
+});
+
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+

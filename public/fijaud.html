@@ -23,14 +23,30 @@
 
         .container {
             margin-top: 20px;
+            max-width: 1200px; /* Aumentar el ancho máximo */
         }
 
         .search-container {
             margin-bottom: 20px;
+            border: 2px solid #00bfff;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #eaf8ff;
         }
 
         .form-group {
-            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #00bfff;
+            box-shadow: inset 0 0 5px rgba(0, 191, 255, 0.5);
         }
 
         .table-container {
@@ -42,102 +58,84 @@
         }
 
         table {
+            width: 100%;
             font-size: 14px;
+            border-collapse: collapse;
         }
 
         th, td {
             text-align: left;
             padding: 8px;
+            border: 1px solid #ddd; /* Añadir borde a las celdas */
         }
 
         th {
             background-color: #007bff;
-            color: white;
-            border-bottom: 2px solid #0056b3;
+            color: #fff;
         }
 
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
 
-        td {
-            border: 1px solid #ddd;
-        }
-
-        .alert {
+        .btn-primary {
             margin-top: 20px;
+            border-radius: 4px;
         }
 
-        /* Nuevo contenedor con borde azul */
-        .form-bottom-container {
-            margin-top: 20px;
-            padding: 20px;
-            border: 2px solid #007bff; /* Borde azul medio grueso */
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .form-section {
+            margin-top: 40px;
         }
 
-        /* Separar el footer del contenido */
-        footer {
-            background-color: #343a40;
-            color: #fff;
-            text-align: center;
-            padding: 20px 0; /* Aumentar el padding para mejor separación */
+        .form-section h3 {
+            margin-bottom: 20px;
+        }
+
+        .form-group select,
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
             width: 100%;
-            font-size: 14px;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
         }
     </style>
 </head>
 <body>
-    <div class="content">
+    <header>
+        <!-- Incluye aquí la barra de navegación -->
+    </header>
+    <main class="content">
         <div class="container">
-            <h2 class="text-center">Consulta de Expediente</h2>
-
-            <!-- Formulario de búsqueda -->
+            <h2>Consulta de Expediente</h2>
             <div class="search-container">
-                <form id="searchForm" class="form-inline">
-                    <div class="form-group mr-2">
-                        <input type="text" class="form-control" id="numExpInput" placeholder="Número de Expediente">
+                <form id="searchForm">
+                    <div class="form-group">
+                        <label for="expNumber">Número de Expediente:</label>
+                        <input type="text" id="expNumber" class="form-control" placeholder="Ingrese número de expediente" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Buscar</button>
                 </form>
             </div>
-
-            <div class="table-container">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Expediente ID</th>
-                            <th>Carátula</th>
-                            <th>Organismo</th>
-                            <th>Audiencista</th>
-                            <th>Comunicador</th>
-                            <th>Ministerio Público</th>
-                            <th>Técnico</th>
-                            <th>Juez</th>
-                            <th>Fiscal</th>
-                            <th>Defensor</th>
-                            <th>Asesor</th>
-                            <th>Estado</th>
-                            <th>Observaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="expedienteTable">
-                        <!-- Los datos se llenarán aquí con JavaScript -->
-                    </tbody>
-                </table>
-                <div class="alert alert-warning" id="noDataAlert" style="display: none;">
-                    No se encontró el expediente solicitado.
-                </div>
-            </div>
-
-            <!-- Nuevos campos y botón "Fijar AUD" -->
-            <div class="form-bottom-container">
-                <form id="fijarForm" class="form-inline">
+            <div id="table-container" class="table-container"></div>
+            <div class="form-section">
+                <h3>Fijar Audiencia</h3>
+                <form id="audienciaForm">
                     <div class="form-group">
-                        <label for="pedido">Pedido</label>
-                        <select id="pedido" class="form-control">
+                        <label for="pedido">Pedido:</label>
+                        <select id="pedido" class="form-control" required>
+                            <option value="">Seleccione...</option>
                             <option value="Preventiva">Preventiva</option>
                             <option value="Revisión de Preventiva">Revisión de Preventiva</option>
                             <option value="Audiencia de Prueba">Audiencia de Prueba</option>
@@ -146,103 +144,110 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="fechaAudiencia">Fecha de audiencia</label>
-                        <input type="date" id="fechaAudiencia" class="form-control">
+                        <label for="fechaAudiencia">Fecha de Audiencia:</label>
+                        <input type="date" id="fechaAudiencia" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="hora">Hora</label>
-                        <select id="hora" class="form-control time-select">
-                            <option value="08:00 a 09:00">08:00 a 09:00</option>
-                            <option value="09:00 a 10:00">09:00 a 10:00</option>
-                            <option value="10:00 a 11:00">10:00 a 11:00</option>
-                            <option value="11:00 a 12:00">11:00 a 12:00</option>
-                            <option value="12:00 a 13:00">12:00 a 13:00</option>
-                            <option value="08:00 a 10:00">08:00 a 10:00</option>
-                            <option value="10:00 a 12:00">10:00 a 12:00</option>
-                            <option value="12:00 a 13:00">12:00 a 13:00</option>
-                            <option value="08:00 a 08:30">08:00 a 08:30</option>
-                            <option value="08:30 a 09:00">08:30 a 09:00</option>
-                            <option value="09:00 a 09:30">09:00 a 09:30</option>
-                            <option value="09:30 a 10:00">09:30 a 10:00</option>
-                            <option value="10:00 a 10:30">10:00 a 10:30</option>
-                            <option value="10:30 a 11:00">10:30 a 11:00</option>
-                            <option value="11:00 a 11:30">11:00 a 11:30</option>
-                            <option value="11:30 a 12:00">11:30 a 12:00</option>
-                            <option value="12:00 a 12:30">12:00 a 12:30</option>
-                            <option value="12:30 a 13:00">12:30 a 13:00</option>
-                            <option value="13:00 a 13:30">13:00 a 13:30</option>
-                            <option value="13:00 a 13:45">13:00 a 13:45</option>
-                            <option value="14:00 a 15:00">14:00 a 15:00</option>
-                            <option value="15:00 a 16:00">15:00 a 16:00</option>
-                            <option value="16:00 a 17:00">16:00 a 17:00</option>
-                            <option value="17:00 a 18:00">17:00 a 18:00</option>
-                        </select>
+                        <label for="hora">Hora:</label>
+                        <input type="time" id="hora" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="sala">Sala</label>
-                        <select id="sala" class="form-control">
+                        <label for="sala">Sala:</label>
+                        <select id="sala" class="form-control" required>
+                            <option value="">Seleccione...</option>
                             <option value="Garantía 1">Garantía 1</option>
                             <option value="Vocalía 1">Vocalía 1</option>
                             <option value="Vocalía 3">Vocalía 3</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-success">Fijar AUD</button>
+                    <div class="form-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" class="form-control" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Fijar AUD</button>
                 </form>
+                <div id="message" class="message"></div>
             </div>
         </div>
-    </div>
-
+    </main>
     <footer>
-        <p>&copy; 2024 Poder Judicial de Salta - Metán. Todos los derechos reservados.</p>
+        <!-- Incluye aquí el footer -->
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('searchForm');
-            const tableBody = document.getElementById('expedienteTable');
-            const alert = document.getElementById('noDataAlert');
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const numExp = document.getElementById('expNumber').value;
+            fetch(`/fijaud/${numExp}`)
+                .then(response => response.json())
+                .then(data => {
+                    let tableHTML = `<table class="table table-bordered"><thead><tr>`;
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            tableHTML += `<th>${key}</th>`;
+                        }
+                    }
+                    tableHTML += `</tr></thead><tbody><tr>`;
+                    for (const key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            tableHTML += `<td>${data[key]}</td>`;
+                        }
+                    }
+                    tableHTML += `</tr></tbody></table>`;
+                    document.getElementById('table-container').innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
+                    document.getElementById('table-container').innerHTML = '<p class="text-danger">Error al obtener los datos</p>';
+                });
+        });
 
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const numExp = document.getElementById('numExpInput').value;
+        document.getElementById('audienciaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const numExp = document.getElementById('expNumber').value;
+            const pedido = document.getElementById('pedido').value;
+            const fechaAudiencia = document.getElementById('fechaAudiencia').value;
+            const hora = document.getElementById('hora').value;
+            const sala = document.getElementById('sala').value;
+            const estado = document.getElementById('estado').value;
 
-                if (numExp) {
-                    fetch(`/fijaud/${numExp}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data) {
-                                const row = `
-                                    <tr>
-                                        <td>${data.idx || 'N/A'}</td>
-                                        <td>${data.caratula || 'N/A'}</td>
-                                        <td>${data.organismo || 'N/A'}</td>
-                                        <td>${data.nomb_aud || 'N/A'}</td>
-                                        <td>${data.nomb_com || 'N/A'}</td>
-                                        <td>${data.mb_pub || 'N/A'}</td>
-                                        <td>${data.nomb_tec || 'N/A'}</td>
-                                        <td>${data.mb_jue || 'N/A'}</td>
-                                        <td>${data.nomb_fis || 'N/A'}</td>
-                                        <td>${data.mb_def || 'N/A'}</td>
-                                        <td>${data.nomb_men || 'N/A'}</td>
-                                        <td>${data.estado || 'N/A'}</td>
-                                        <td>${data.obs || 'N/A'}</td>
-                                    </tr>
-                                `;
-                                tableBody.innerHTML = row;
-                                alert.style.display = 'none';
-                            } else {
-                                tableBody.innerHTML = '';
-                                alert.style.display = 'block';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            tableBody.innerHTML = '';
-                            alert.style.display = 'block';
-                        });
-                }
+            fetch('/fijarAudiencia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    numExp: numExp,
+                    pedido: pedido,
+                    fechaAudiencia: fechaAudiencia,
+                    hora: hora,
+                    sala: sala,
+                    estado: estado
+                })
+            })
+            .then(response => response.text())
+            .then(message => {
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = message;
+                messageElement.className = 'message success'; // Cambia a 'success' para mensaje de éxito
+                document.getElementById('audienciaForm').reset();
+            })
+            .catch(error => {
+                console.error('Error al fijar la audiencia:', error);
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = 'Error al fijar la audiencia.';
+                messageElement.className = 'message error'; // Cambia a 'error' para mensaje de error
             });
         });
     </script>
 </body>
 </html>
+
+
+
+

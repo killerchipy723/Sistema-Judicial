@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,9 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            padding-bottom: 80px; /* Espacio para el footer */
         }
+
         .login-container {
             background: #ffffff;
             padding: 20px;
@@ -27,51 +30,79 @@
             text-align: center;
             transition: transform 0.3s, box-shadow 0.3s;
         }
+
         .login-container:hover {
             transform: translateY(-10px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
         .login-container img {
             width: 80px;
             margin-bottom: 20px;
         }
+
         .login-container h2 {
             margin-bottom: 20px;
         }
+
         .input-group {
             margin-bottom: 15px;
         }
+
         .input-group-prepend span {
             width: 40px;
             background-color: #007bff;
             color: white;
             border: none;
         }
+
         .form-control {
             border-left: 0;
         }
+
         .login-container .btn-primary {
             background-color: #007bff;
             border: none;
         }
+
         .login-container .btn-primary:hover {
             background-color: #0056b3;
         }
+
         .login-container .form-footer {
             margin-top: 20px;
         }
+
         .login-container .form-footer a {
             color: #007bff;
             text-decoration: none;
         }
+
         .login-container .form-footer a:hover {
             text-decoration: underline;
         }
+
         .login-container .alert {
             margin-top: 20px;
         }
+
+        footer {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 0;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <img src="escudo-salta.png" alt="Escudo de Salta">
@@ -101,13 +132,16 @@
             <% } %>
         </form>
     </div>
+
+    <footer>
+        <p>Poder Judicial de la Provincia de Salta - Distrito Metán</p>
+        <p>Todos los derechos reservados &copy; 2024</p>
+    </footer>
+
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
-
-
-
-
