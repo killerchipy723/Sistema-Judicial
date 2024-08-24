@@ -23,7 +23,7 @@ const pool = mariadb.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'expediente',
+  database: 'expedientes',
   connectionLimit: 5
 });
 
@@ -44,11 +44,14 @@ app.post('/login', async (req, res) => {
     conn = await pool.getConnection();
     const sql = "SELECT * FROM usuarios WHERE usuario = ? AND clave = ?";
     const rows = await conn.query(sql, [username, password]);
-    
+
     if (rows.length > 0) {
+      // Obtén el nombre y apellido concatenados
+      const userData = await conn.query("SELECT CONCAT(apellido, ', ', nombre) AS fullName FROM usuarios WHERE usuario = ?", [username]);
       req.session.loggedIn = true;
       req.session.username = username;
-      res.redirect('/index.html'); // Añadir barra inicial
+      req.session.fullName = userData[0].fullName;
+      res.redirect('/index');
     } else {
       res.redirect('/?error=Contraseña incorrecta');
     }
@@ -61,9 +64,9 @@ app.post('/login', async (req, res) => {
 });
 
 // Ruta para servir la página principal después del login
-app.get('/index.html', (req, res) => {
+app.get('/index', async (req, res) => {
   if (req.session.loggedIn) {
-    res.sendFile(path.join(__dirname,'index.html')); // Corregir la ruta
+    res.render('index', { fullName: req.session.fullName });
   } else {
     res.redirect('/');
   }
@@ -144,3 +147,4 @@ app.get('/agenda', async (req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+

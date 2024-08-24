@@ -57,38 +57,57 @@
         .login-container .btn-primary:hover {
             background-color: #0056b3;
         }
-        .login-container .error {
-            color: red;
-            margin-top: 15px;
+        .login-container .form-footer {
+            margin-top: 20px;
         }
-        .login-container .forgot-password {
-            margin-top: 10px;
+        .login-container .form-footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-container .form-footer a:hover {
+            text-decoration: underline;
+        }
+        .login-container .alert {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <img src="/escudo-salta.png" alt="Escudo Salta">
-        <h2>Inicio de Sesión</h2>
-        <% if (error) { %>
-            <div class="error"><%= error %></div>
-        <% } %>
+        <img src="escudo-salta.png" alt="Escudo de Salta">
+        <h2 class="text-center">Iniciar Sesión</h2>
         <form action="/login" method="post">
-            <div class="input-group mb-3">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                 </div>
-                <input type="text" class="form-control" name="username" placeholder="Usuario" required>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required>
             </div>
-            <div class="input-group mb-3">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 </div>
-                <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
-            <a href="/recuperar" class="btn btn-link btn-block forgot-password">¿Olvidaste tu contraseña?</a>
+            <div class="form-footer">
+                <p>¿No tienes una cuenta? <a href="#">Regístrate</a></p>
+                <p><a href="#">¿Olvidaste tu contraseña?</a></p>
+            </div>
+            <% if (error) { %>
+                <div class="alert alert-danger">
+                    <%= error %>
+                </div>
+            <% } %>
         </form>
     </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+
+
+
