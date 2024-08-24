@@ -72,10 +72,11 @@ app.get('/index', async (req, res) => {
   }
 });
 
-// Ruta para obtener los datos del expediente (ejemplo de funcionalidad existente)
-app.get('/consulta/:numExp', async (req, res) => {
+// Ruta para obtener los datos del expediente
+app.get('/fijaud/:numExp', async (req, res) => {
   const numExp = parseInt(req.params.numExp, 10);
   let conn;
+  console.log(`Número de expediente recibido: ${numExp}`); // Depuración
   try {
     conn = await pool.getConnection();
     const sql = `
@@ -147,4 +148,3 @@ app.get('/agenda', async (req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-

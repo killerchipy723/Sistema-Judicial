@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Expediente</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Ajusta la ruta según tu estructura -->
+</head>
+<body>
+    <h1>Buscar Expediente</h1>
+    <form action="/fijaud" method="POST">
+        <div class="form-group">
+            <label for="expediente">Número de Expediente</label>
+            <input type="text" id="expediente" name="expediente" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+    
+    <% if (data.length > 0) { %>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Carátula</th>
+                    <th>Organismo</th>
+                    <th>Audiencia</th>
+                    <th>Comunicador</th>
+                    <th>Publicador</th>
+                    <th>Técnico</th>
+                    <th>Juez</th>
+                    <th>Fiscal</th>
+                    <th>Defensor</th>
+                    <th>Men</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach(item => { %>
+                    <tr>
+                        <td><%= item.idx %></td>
+                        <td><%= item.caratula || 'No disponible' %></td>
+                        <td><%= item.organismo || 'No disponible' %></td>
+                        <td><%= item.nomb_aud || 'No disponible' %></td>
+                        <td><%= item.nomb_com || 'No disponible' %></td>
+                        <td><%= item.mb_pub || 'No disponible' %></td>
+                        <td><%= item.nomb_tec || 'No disponible' %></td>
+                        <td><%= item.mb_jue || 'No disponible' %></td>
+                        <td><%= item.nomb_fis || 'No disponible' %></td>
+                        <td><%= item.mb_def || 'No disponible' %></td>
+                        <td><%= item.nomb_men || 'No disponible' %></td>
+                        <td><%= item.estado || 'No disponible' %></td>
+                        <td><%= item.obs || 'No disponible' %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No se encontraron registros.</p>
+    <% } %>
+</body>
+</html>
+

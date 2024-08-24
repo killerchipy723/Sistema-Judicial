@@ -4,171 +4,245 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Expediente</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            padding: 20px;
-            background-color: #f8f9fa;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
+        .content {
+            flex: 1;
+        }
+
         .container {
-            max-width: 1000px;
+            margin-top: 20px;
         }
-        .form-box {
-            background: #ffffff;
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-right: 15px;
+        }
+
+        .table-container {
+            background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
-        .form-row {
-            margin-bottom: 1rem;
+
+        table {
+            font-size: 14px;
         }
-        .form-group {
-            margin-bottom: 1rem;
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            border-bottom: 2px solid #0056b3;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        td {
+            border: 1px solid #ddd;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+
+        /* Nuevo contenedor con borde azul */
+        .form-bottom-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid #007bff; /* Borde azul medio grueso */
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Separar el footer del contenido */
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0; /* Aumentar el padding para mejor separación */
+            width: 100%;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
+    <div class="content">
+        <div class="container">
+            <h2 class="text-center">Consulta de Expediente</h2>
 
-<div class="container">
-    <div class="form-box">
-        <h1 class="mb-4">Consulta de Expediente</h1>
-        <form id="consultaForm">
-            <div class="mb-3">
-                <label for="numExp" class="form-label">Número de Expediente</label>
-                <input type="text" class="form-control" id="numExp" required>
+            <!-- Formulario de búsqueda -->
+            <div class="search-container">
+                <form id="searchForm" class="form-inline">
+                    <div class="form-group mr-2">
+                        <input type="text" class="form-control" id="numExpInput" placeholder="Número de Expediente">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Consultar</button>
-        </form>
 
-        <div id="result" class="mt-4" style="display:none;">
-            <h2>Detalles del Expediente</h2>
-            <form>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="caratula" class="form-label">Carátula</label>
-                            <textarea class="form-control" id="caratula" rows="3" readonly></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="organismo" class="form-label">Organismo</label>
-                            <input type="text" class="form-control" id="organismo" readonly>
-                        </div>
-                    </div>
+            <div class="table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Expediente ID</th>
+                            <th>Carátula</th>
+                            <th>Organismo</th>
+                            <th>Audiencista</th>
+                            <th>Comunicador</th>
+                            <th>Ministerio Público</th>
+                            <th>Técnico</th>
+                            <th>Juez</th>
+                            <th>Fiscal</th>
+                            <th>Defensor</th>
+                            <th>Asesor</th>
+                            <th>Estado</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expedienteTable">
+                        <!-- Los datos se llenarán aquí con JavaScript -->
+                    </tbody>
+                </table>
+                <div class="alert alert-warning" id="noDataAlert" style="display: none;">
+                    No se encontró el expediente solicitado.
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="aud" class="form-label">Audiencista</label>
-                            <input type="text" class="form-control" id="aud" readonly>
-                        </div>
+            </div>
+
+            <!-- Nuevos campos y botón "Fijar AUD" -->
+            <div class="form-bottom-container">
+                <form id="fijarForm" class="form-inline">
+                    <div class="form-group">
+                        <label for="pedido">Pedido</label>
+                        <select id="pedido" class="form-control">
+                            <option value="Preventiva">Preventiva</option>
+                            <option value="Revisión de Preventiva">Revisión de Preventiva</option>
+                            <option value="Audiencia de Prueba">Audiencia de Prueba</option>
+                            <option value="Probation">Probation</option>
+                            <option value="Juicio Abreviado">Juicio Abreviado</option>
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="comu" class="form-label">Comunicador</label>
-                            <input type="text" class="form-control" id="comu" readonly>
-                        </div>
+                    <div class="form-group">
+                        <label for="fechaAudiencia">Fecha de audiencia</label>
+                        <input type="date" id="fechaAudiencia" class="form-control">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="ap" class="form-label">Aten. Público</label>
-                            <input type="text" class="form-control" id="ap" readonly>
-                        </div>
+                    <div class="form-group">
+                        <label for="hora">Hora</label>
+                        <select id="hora" class="form-control time-select">
+                            <option value="08:00 a 09:00">08:00 a 09:00</option>
+                            <option value="09:00 a 10:00">09:00 a 10:00</option>
+                            <option value="10:00 a 11:00">10:00 a 11:00</option>
+                            <option value="11:00 a 12:00">11:00 a 12:00</option>
+                            <option value="12:00 a 13:00">12:00 a 13:00</option>
+                            <option value="08:00 a 10:00">08:00 a 10:00</option>
+                            <option value="10:00 a 12:00">10:00 a 12:00</option>
+                            <option value="12:00 a 13:00">12:00 a 13:00</option>
+                            <option value="08:00 a 08:30">08:00 a 08:30</option>
+                            <option value="08:30 a 09:00">08:30 a 09:00</option>
+                            <option value="09:00 a 09:30">09:00 a 09:30</option>
+                            <option value="09:30 a 10:00">09:30 a 10:00</option>
+                            <option value="10:00 a 10:30">10:00 a 10:30</option>
+                            <option value="10:30 a 11:00">10:30 a 11:00</option>
+                            <option value="11:00 a 11:30">11:00 a 11:30</option>
+                            <option value="11:30 a 12:00">11:30 a 12:00</option>
+                            <option value="12:00 a 12:30">12:00 a 12:30</option>
+                            <option value="12:30 a 13:00">12:30 a 13:00</option>
+                            <option value="13:00 a 13:30">13:00 a 13:30</option>
+                            <option value="13:00 a 13:45">13:00 a 13:45</option>
+                            <option value="14:00 a 15:00">14:00 a 15:00</option>
+                            <option value="15:00 a 16:00">15:00 a 16:00</option>
+                            <option value="16:00 a 17:00">16:00 a 17:00</option>
+                            <option value="17:00 a 18:00">17:00 a 18:00</option>
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="tecnico" class="form-label">Técnico</label>
-                            <input type="text" class="form-control" id="tecnico" readonly>
-                        </div>
+                    <div class="form-group">
+                        <label for="sala">Sala</label>
+                        <select id="sala" class="form-control">
+                            <option value="Garantía 1">Garantía 1</option>
+                            <option value="Vocalía 1">Vocalía 1</option>
+                            <option value="Vocalía 3">Vocalía 3</option>
+                        </select>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="juez" class="form-label">Juez</label>
-                            <input type="text" class="form-control" id="juez" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="fiscal" class="form-label">Fiscal</label>
-                            <input type="text" class="form-control" id="fiscal" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="def" class="form-label">Defensor</label>
-                            <input type="text" class="form-control" id="def" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="asesor" class="form-label">Asesor</label>
-                            <input type="text" class="form-control" id="asesor" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <input type="text" class="form-control" id="estado" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="obs" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="obs" rows="3" readonly></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="id" class="form-label">ID Expediente</label>
-                    <input type="text" class="form-control" id="id" readonly>
-                </div>
-            </form>
+                    <button type="button" class="btn btn-success">Fijar AUD</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.getElementById('consultaForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const numExp = document.getElementById('numExp').value;
+    <footer>
+        <p>&copy; 2024 Poder Judicial de Salta - Metán. Todos los derechos reservados.</p>
+    </footer>
 
-        fetch(`/consulta/${numExp}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data) {
-                    document.getElementById('caratula').value = data.caratula;
-                    document.getElementById('organismo').value = data.organismo;
-                    document.getElementById('aud').value = data.nomb_aud;
-                    document.getElementById('comu').value = data.nomb_com;
-                    document.getElementById('ap').value = data.mb_pub;
-                    document.getElementById('tecnico').value = data.nomb_tec;
-                    document.getElementById('juez').value = data.mb_jue;
-                    document.getElementById('fiscal').value = data.nomb_fis;
-                    document.getElementById('def').value = data.mb_def;
-                    document.getElementById('asesor').value = data.nomb_men;
-                    document.getElementById('estado').value = data.estado;
-                    document.getElementById('obs').value = data.obs;
-                    document.getElementById('id').value = data.idx;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('searchForm');
+            const tableBody = document.getElementById('expedienteTable');
+            const alert = document.getElementById('noDataAlert');
 
-                    document.getElementById('result').style.display = 'block';
-                } else {
-                    alert('No se encontró el expediente');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const numExp = document.getElementById('numExpInput').value;
+
+                if (numExp) {
+                    fetch(`/fijaud/${numExp}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data) {
+                                const row = `
+                                    <tr>
+                                        <td>${data.idx || 'N/A'}</td>
+                                        <td>${data.caratula || 'N/A'}</td>
+                                        <td>${data.organismo || 'N/A'}</td>
+                                        <td>${data.nomb_aud || 'N/A'}</td>
+                                        <td>${data.nomb_com || 'N/A'}</td>
+                                        <td>${data.mb_pub || 'N/A'}</td>
+                                        <td>${data.nomb_tec || 'N/A'}</td>
+                                        <td>${data.mb_jue || 'N/A'}</td>
+                                        <td>${data.nomb_fis || 'N/A'}</td>
+                                        <td>${data.mb_def || 'N/A'}</td>
+                                        <td>${data.nomb_men || 'N/A'}</td>
+                                        <td>${data.estado || 'N/A'}</td>
+                                        <td>${data.obs || 'N/A'}</td>
+                                    </tr>
+                                `;
+                                tableBody.innerHTML = row;
+                                alert.style.display = 'none';
+                            } else {
+                                tableBody.innerHTML = '';
+                                alert.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            tableBody.innerHTML = '';
+                            alert.style.display = 'block';
+                        });
                 }
             });
-    });
-</script>
-
+        });
+    </script>
 </body>
 </html>
-
-
