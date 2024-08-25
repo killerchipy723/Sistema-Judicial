@@ -4,7 +4,7 @@ const mariadb = require('mariadb');
 const session = require('express-session');
 const path = require('path');
 const app = express();
-const port = 8080;
+const port = 3000;
 
 // Configura Express para servir archivos estáticos desde la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
@@ -187,6 +187,85 @@ app.post('/fijarAudiencia', async (req, res) => {
     res.status(500).send('Error al fijar la audiencia.');
   }
 });
+
+// Ruta para obtener los cargos y llenar el combobox
+app.get('/cargos', async (req, res) => {
+  let conn;
+  try {
+      conn = await pool.getConnection();
+      const sql = "SELECT  cargo FROM cargo";
+      const cargos = await conn.query(sql);
+      res.json(cargos);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error al obtener los cargos');
+  } finally {
+      if (conn) conn.end();
+  }
+});
+
+// Ruta para registrar un nuevo empleado
+app.post('/registrarEmpleado', async (req, res) => {
+  const { apellido, nombre, cargo } = req.body;
+  let conn;
+  try {
+      conn = await pool.getConnection();
+      const sql = "INSERT INTO empleados_ofiju (apellido, nombre, cargo) VALUES (?, ?, ?)";
+      await conn.query(sql, [apellido, nombre, cargo]);
+      res.json({ message: 'Empleado registrado correctamente' });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error al registrar el empleado');
+  } finally {
+      if (conn) conn.end();
+  }
+});
+
+// Ruta para obtener la lista de empleados
+app.get('/empleados', async (req, res) => {
+  let conn;
+  try {
+      conn = await pool.getConnection();
+      const sql = "SELECT idEmpleado, apellido, nombre, cargo FROM empleados_ofiju";
+      const empleados = await conn.query(sql);
+      res.json(empleados);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error al obtener los empleados');
+  } finally {
+      if (conn) conn.end();
+  }
+});
+
+app.post('/modificarEmpleado', async (req, res) => {
+  const { idEmpleado, apellido, nombre, cargo } = req.body;
+
+  let conn;
+  try {
+      conn = await pool.getConnection();
+      const query = `UPDATE empleados_ofiju SET apellido = ?, nombre = ?, cargo = ? WHERE idEmpleado = ?`;
+      const result = await conn.query(query, [apellido, nombre, cargo, idEmpleado]);
+
+      console.log('Resultado de la consulta:', result); // Verifica el resultado de la consulta
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Empleado no encontrado' });
+      }
+
+      res.json({ message: 'Empleado actualizado correctamente' });
+  } catch (error) {
+      console.error('Error actualizando el empleado:', error);
+      res.status(500).json({ message: 'Error actualizando el empleado', error: error.message });
+  } finally {
+      if (conn) conn.release(); // Asegúrate de liberar la conexión
+  }
+});
+
+
+
+
+
+
 
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {

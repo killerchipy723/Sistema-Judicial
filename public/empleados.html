@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+  /* Estilo para la tabla */
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 18px;
+    width: 100%;
+    text-align: left;
+    border: 2px solid #032c61; /* Borde exterior de la tabla */
+}
+
+.styled-table thead tr {
+    background-color: #032c61;
+    color: white;
+    text-align: center;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 2px 5px; /* Reducir el padding para disminuir la altura */
+    text-align: center;
+    border: 1px solid #dddddd; /* Bordes entre celdas */
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #032c61;
+}
+
+.styled-table .edit-btn {
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.styled-table .edit-btn:hover {
+    background-color: #026c9e;
+}
+
+
+
+        /* Estilo para el modal */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Fondo semi-transparente */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content form label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .modal-content form input {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal-content form button {
+            padding: 10px 20px;
+            background-color: #032c61;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .modal-content form button:hover {
+            background-color: #0254a5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Gestión de Empleados</h1>
+
+        <!-- Formulario -->
+        <form id="empleadoForm" class="styled-form">
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" class="form-control" id="apellido" name="apellido" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="cargo">Cargo:</label>
+                <select class="form-control" id="cargo" name="cargo"></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Empleado</button>
+        </form>
+
+        <!-- Tabla -->
+        <h2 class="mt-4">Lista de Empleados</h2>
+        <table class="styled-table mt-4" id="empleadosTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th>Cargo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Modal para editar -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Modificar Registro</h2>
+            <form id="editForm">
+                <input type="hidden" id="editId" name="idEmpleado">
+                <label for="editApellido">Apellido:</label>
+                <input type="text" id="editApellido" name="apellido" required>
+
+                <label for="editNombre">Nombre:</label>
+                <input type="text" id="editNombre" name="nombre" required>
+
+                <label for="editCargo">Cargo:</label>
+                <select id="editCargo" name="cargo"></select>
+
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Cargar cargos en el combobox
+            $.get('/cargos', function(data) {
+                data.forEach(function(cargo) {
+                    $('#cargo').append(new Option(cargo.cargo, cargo.cargo));
+                    $('#editCargo').append(new Option(cargo.cargo, cargo.cargo));
+                });
+            });
+
+            // Manejar el envío del formulario de creación
+            $('#empleadoForm').submit(function(e) {
+                e.preventDefault();
+                const empleado = {
+                    apellido: $('#apellido').val(),
+                    nombre: $('#nombre').val(),
+                    cargo: $('#cargo').val()
+                };
+
+                $.post('/registrarEmpleado', empleado, function(response) {
+                    alert(response.message);
+                    cargarEmpleados();
+                });
+            });
+
+            // Cargar los empleados en la tabla
+            function cargarEmpleados() {
+                $.get('/empleados', function(data) {
+                    const tbody = $('#empleadosTable tbody');
+                    tbody.empty();
+                    data.forEach(function(empleado) {
+                        const row = `<tr>
+                            <td>${empleado.idEmpleado}</td>
+                            <td>${empleado.apellido}</td>
+                            <td>${empleado.nombre}</td>
+                            <td>${empleado.cargo}</td>
+                            <td><button class="edit-btn" onclick="openModal(${empleado.idEmpleado}, '${empleado.apellido}', '${empleado.nombre}', '${empleado.cargo}')">Modificar</button></td>
+                        </tr>`;
+                        tbody.append(row);
+                    });
+                });
+            }
+
+            // Inicializar la carga de empleados
+            cargarEmpleados();
+
+            // Función para abrir el modal con los datos del empleado seleccionado
+            window.openModal = function(id, apellido, nombre, cargo) {
+                $('#editId').val(id);
+                $('#editApellido').val(apellido);
+                $('#editNombre').val(nombre);
+                $('#editCargo').val(cargo);
+                $('#editModal').show();
+            };
+
+            // Manejar el cierre del modal
+            $('.close-btn').click(function() {
+                $('#editModal').hide();
+            });
+
+            // Manejar el envío del formulario de edición
+            $('#editForm').submit(function(e) {
+                e.preventDefault();
+                const empleadoEditado = {
+                    idEmpleado: $('#editId').val(),
+                    apellido: $('#editApellido').val(),
+                    nombre: $('#editNombre').val(),
+                    cargo: $('#editCargo').val()
+                };
+
+                $.post('/modificarEmpleado', empleadoEditado, function(response) {
+                    alert(response.message);
+                    $('#editModal').hide();
+                    cargarEmpleados();
+                });
+            });
+
+            // Cerrar el modal al hacer clic fuera de la ventana modal
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('editModal')) {
+                    $('#editModal').hide();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
